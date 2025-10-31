@@ -8,13 +8,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 
 def run_machine_learning(df):
-    st.title("🤖 Entraînement du Modèle de Classification")
+    st.title("Entraînement du modèle de classification")
 
     if df is None or df.empty:
         st.error("❌ Aucune donnée disponible pour l'entraînement")
         return None
     
-    st.header("📋 Vérification des Données")
+    st.header("Vérification des données")
     col1, col2, col3 = st.columns(3)
     col1.metric("Lignes", df.shape[0])
     col2.metric("Colonnes", df.shape[1])
@@ -23,7 +23,7 @@ def run_machine_learning(df):
     # -------------------------------
     # ✅ Target
     # -------------------------------
-    st.header("🎯 Target")
+    st.header("Target")
 
     all_columns = df.columns.tolist()
 
@@ -59,7 +59,7 @@ def run_machine_learning(df):
     # -------------------------------
     # Analyse de la target
     # -------------------------------
-    st.header("📊 Analyse de la Target")
+    st.header("Analyse de la target")
     y = df[target_col]
     n_classes = len(np.unique(y))
 
@@ -98,7 +98,7 @@ def run_machine_learning(df):
     # -------------------------------
     # ✅ Choix du modèle
     # -------------------------------
-    st.header("🧠 Configuration du Modèle")
+    st.header("Configuration du modèle")
 
     model_choice = st.radio("Sélectionnez l'algorithme :", ["Random Forest", "Régression Logistique"], horizontal=True)
 
@@ -114,15 +114,15 @@ def run_machine_learning(df):
     # -------------------------------
     # ✅ Entraînement
     # -------------------------------
-    st.header("🚀 Entraînement du Modèle")
+    st.header("Entraînement du modèle")
 
-    if st.button("🚀 Lancer l'Entraînement", type="primary"):
+    if st.button("Lancer l'entraînement", type="primary"):
 
         model.fit(X_train, y_train)
         st.success("✅ Modèle entraîné !")
 
         # ✅ Importance des variables
-        st.subheader("📌 Importance des Variables")
+        st.subheader("Poids des variables dans le modèle")
 
         importances = model.feature_importances_ if model_choice == "Random Forest" else np.abs(model.coef_[0])
 
@@ -130,10 +130,10 @@ def run_machine_learning(df):
         st.dataframe(feat_imp, width="stretch")
 
         # Graphique importance
-        st.subheader("📊 Importance des Variables")
+        st.subheader("Visualisation : Variables les plus influentes dans le modèle")
         fig, ax = plt.subplots(figsize=(10, 5))
         sns.barplot(data=feat_imp, x="Importance", y="Variable", hue="Variable", palette="viridis", legend=False, ax=ax)
-        ax.set_title(f"Importance des Variables - {model_choice}")
+        ax.set_title(f"Importance des variables - {model_choice}")
         st.pyplot(fig)
 
         # ✅ Tree example for RF
@@ -142,7 +142,7 @@ def run_machine_learning(df):
             estimator = model.estimators_[0]
             fig, ax = plt.subplots(figsize=(25, 12))
             tree.plot_tree(estimator, feature_names=feature_cols, filled=True, rounded=True, fontsize=7)
-            st.subheader("🌳 Présentation du Random Forest")
+            st.subheader("Présentation du Random Forest")
             st.pyplot(fig)
 
         # Stocker résultats pour l'évaluation

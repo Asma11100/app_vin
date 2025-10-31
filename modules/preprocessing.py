@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
 
 def run_preprocessing(df):
-    st.title("⚙️ Préparation des Données")
+    st.title("Préparation des données")
 
     if df.empty:
         st.warning("❗ Aucune donnée à prétraiter")
@@ -16,7 +16,7 @@ def run_preprocessing(df):
     # =====================================================
     # 1️⃣ Sélection des colonnes
     # =====================================================
-    st.header("🗂️ Sélection des Colonnes")
+    st.header("Sélection des colonnes")
 
     selected_columns = st.multiselect(
         "Choisissez les colonnes à conserver :",
@@ -34,7 +34,7 @@ def run_preprocessing(df):
     # =====================================================
     # 2️⃣ Gestion des valeurs manquantes
     # =====================================================
-    st.header("🎯 Gestion des Valeurs Manquantes")
+    st.header("Gestion des valeurs manquantes")
 
     missing_cols = df_processed.columns[df_processed.isnull().any()]
 
@@ -75,28 +75,11 @@ def run_preprocessing(df):
     else:
         st.success("✅ Aucune valeur manquante")
 
-    # =====================================================
-    # 3️⃣ Normalisation
-    # =====================================================
-    st.header("📏 Normalisation")
-
-    numeric_cols = df_processed.select_dtypes(include=np.number).columns.tolist()
-
-    if numeric_cols:
-        cols_to_scale = st.multiselect(
-            "Choisissez les colonnes numériques à normaliser :",
-            options=numeric_cols
-        )
-
-        if cols_to_scale:
-            scaler = StandardScaler()
-            df_processed[cols_to_scale] = scaler.fit_transform(df_processed[cols_to_scale])
-            st.success(f"✅ Normalisation appliquée sur {len(cols_to_scale)} colonnes")
-
+ 
     # =====================================================
     # 4️⃣ Encodage des variables catégorielles
     # =====================================================
-    st.header("🔤 Encodage des Variables Catégorielles")
+    st.header("Encodage des variables catégorielles")
 
     cat_cols = df_processed.select_dtypes(include='object').columns
 
@@ -113,7 +96,7 @@ def run_preprocessing(df):
     # =====================================================
     # 5️⃣ Division du Train/Test
     # =====================================================
-    st.header("✂️ Division du Train / Test")
+    st.header("Division du Train / Test")
 
     target_cols = [c for c in df_processed.columns if "target" in c.lower()]
     if not target_cols:
@@ -142,7 +125,7 @@ def run_preprocessing(df):
     # =====================================================
     # Résumé final
     # =====================================================
-    st.header("📋 Résultat du Préparation")
+    st.header("Résultat de la préparation des données")
 
     col1, col2 = st.columns(2)
 
@@ -155,7 +138,7 @@ def run_preprocessing(df):
     st.dataframe(df_processed.head())
 
     # Option de téléchargement
-    if st.button("💾 Sauvegardez les données préparées"):
+    if st.button("Sauvegardez les données préparées"):
         csv = df_processed.to_csv(index=False)
         st.download_button(
             label="📥 Téléchargez les données préparées",

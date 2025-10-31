@@ -11,7 +11,7 @@ from sklearn.metrics import (
 )
 
 def run_evaluation(model, results):
-    st.header("📊 Évaluation du Modèle")
+    st.header("Évaluation du modèle")
 
     if model is None or results is None:
         st.warning("⚠️ Aucun modèle trouvé. Veuillez entraîner un modèle d'abord.")
@@ -51,8 +51,8 @@ def run_evaluation(model, results):
         )
     }
 
-    # 📌 Affichage metrics
-    st.subheader("📦 Performance du Modèle (Train vs Test)")
+    # Affichage metrics
+    st.subheader("Performance du modèle (Train vs Test)")
     cols = st.columns(4)
     for idx, (metric, (train_val, test_val)) in enumerate(metrics.items()):
         cols[idx].metric(
@@ -65,7 +65,7 @@ def run_evaluation(model, results):
     st.write("---")
 
     # 🔥 Matrice de confusion
-    st.subheader("📌 Matrice de Confusion")
+    st.subheader("Matrice de confusion")
 
     fig, ax = plt.subplots(figsize=(4, 3))
 
@@ -76,13 +76,13 @@ def run_evaluation(model, results):
         cmap="Blues",
         ax=ax
     )
-    ax.set_title("Matrice de Confusion")
+    ax.set_title("Matrice de confusion")
     st.pyplot(fig)
 
     st.write("---")
 
     # 📑 Classification Report
-    st.subheader("📋 Classification Report")
+    st.subheader("Précision du modèle")
     report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose()
     st.dataframe(report_df.style.format("{:.3f}"), width="stretch")
 

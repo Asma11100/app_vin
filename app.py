@@ -95,7 +95,7 @@ if page == "🏠 Accueil":
     st.markdown("---")
     
     # Section Mission
-    st.markdown("## 🎯 Mission du projet")
+    st.markdown("## Mission du projet")
     
     st.markdown("""
     <div style='background-color: #fff5f5; padding: 2rem; border-radius: 10px; border-left: 5px solid #8B0000;'>
@@ -108,9 +108,9 @@ if page == "🏠 Accueil":
     """, unsafe_allow_html=True)
     
     # Section Pipeline
-    st.markdown("## 🔬 Notre Approche Scientifique")
+    st.markdown("## Notre Approche Scientifique")
     
-    st.markdown("### ⚡ Pipeline IA Haute Performance")
+    st.markdown("###    Pipeline IA Haute Performance")
     st.markdown("Notre pipeline complet de Machine Learning transforme les données chimiques brutes en insights actionnables :")
     
     col1, col2, col3, col4 = st.columns(4)
@@ -118,7 +118,7 @@ if page == "🏠 Accueil":
     with col1:
         st.markdown("""
         <div class="feature-card">
-            <h4>🔍 EXPLORATION</h4>
+            <h4> EXPLORATION</h4>
             <p>Analyse descriptive, visualisations avancées, matrice de corrélation</p>
         </div>
         """, unsafe_allow_html=True)
@@ -126,7 +126,7 @@ if page == "🏠 Accueil":
     with col2:
         st.markdown("""
         <div class="feature-card">
-            <h4>⚙️ PRÉPARATION</h4>
+            <h4> PRÉPARATION</h4>
             <p>Nettoyage, normalisation, encodage, feature engineering</p>
         </div>
         """, unsafe_allow_html=True)
@@ -134,7 +134,7 @@ if page == "🏠 Accueil":
     with col3:
         st.markdown("""
         <div class="feature-card">
-            <h4>🤖 ENTRAÎNEMENT</h4>
+            <h4> ENTRAÎNEMENT</h4>
             <p>Algorithmes Random Forest, validation croisée, optimisation</p>
         </div>
         """, unsafe_allow_html=True)
@@ -142,21 +142,20 @@ if page == "🏠 Accueil":
     with col4:
         st.markdown("""
         <div class="feature-card">
-            <h4>📊 ÉVALUATION</h4>
+            <h4> ÉVALUATION</h4>
             <p>Métriques précises, matrices de confusion, rapports détaillés</p>
         </div>
         """, unsafe_allow_html=True)
     
     # Section Données
-    st.markdown("## 📊 Données d'excellence")
+    st.markdown("## Données d'excellence")
     
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
         st.markdown("""
         <div class="stats-card">
-            <h3>🍇</h3>
-            <h4>178 Crus</h4>
+       <h4>178 Crus</h4>
             <p>Soigneusement analysés</p>
         </div>
         """, unsafe_allow_html=True)
@@ -164,8 +163,7 @@ if page == "🏠 Accueil":
     with col2:
         st.markdown("""
         <div class="stats-card">
-            <h3>🔬</h3>
-            <h4>13 Paramètres</h4>
+         <h4>13 Paramètres</h4>
             <p>Chimiques mesurés</p>
         </div>
         """, unsafe_allow_html=True)
@@ -173,8 +171,7 @@ if page == "🏠 Accueil":
     with col3:
         st.markdown("""
         <div class="stats-card">
-            <h3>🏷️</h3>
-            <h4>3 Catégories</h4>
+          <h4>3 Catégories</h4>
             <p>Distinctes de vins</p>
         </div>
         """, unsafe_allow_html=True)
@@ -182,49 +179,30 @@ if page == "🏠 Accueil":
     with col4:
         st.markdown("""
         <div class="stats-card">
-            <h3>✅</h3>
-            <h4>Données complètes</h4>
+         <h4>Données complètes</h4>
             <p>Sans valeurs manquantes</p>
         </div>
         """, unsafe_allow_html=True)
     
 
     # Caractéristiques des vins
-    st.markdown("## 📈 Notre cépage de données")
+    st.markdown("## Notre cépage de données")
     
     st.markdown("""
     Comme un vigneron sélectionne ses cépages, nous analysons méticuleusement chaque caractéristique :
     
-    - **🍷 Alcool** - Le corps et la chaleur du vin
-    - **🍋 Acidité** - La fraîcheur et la vivacité caractéristiques  
-    - **🌿 Phénols** - La structure, les tanins et l'astringence
-    - **🎨 Couleur** - La robe, l'intensité et la profondeur
-    - **⭐ Proline** - Marqueur de qualité et de complexité
+    - ** Alcool** - Le corps et la chaleur du vin
+    - ** Acidité** - La fraîcheur et la vivacité caractéristiques  
+    - ** Phénols** - La structure, les tanins et l'astringence
+    - ** Couleur** - La robe, l'intensité et la profondeur
+    - ** Proline** - Marqueur de qualité et de complexité
     """)
     
-    # Résultats et questions
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("## 🎯 Résultats Tangibles")
-        st.markdown("""
-        - ⚡ **Analyse en temps réel** de nouveaux vins
-        - 🔍 **Transparence totale** sur les décisions de l'IA
-        - 🎓 **Pédagogie intégrée** pour comprendre l'analyse
-        """)
-    
-    with col2:
-        st.markdown("## ❓ Questions explorées")
-        st.markdown("""
-        - Pourquoi certains vins sont-ils plus alcoolisés ?
-        - Comment l'acidité influence le caractère d'un vin ?
-        - Quels paramètres déterminent la catégorie d'un vin ?
-        - L'IA peut-elle rivaliser avec un œnologue humain ?
-        """)
+ 
     
     # Call to Action
     st.markdown("---")
-    st.markdown("## 🚀 Commencer l'Exploration")
+    st.markdown("##  Commencer l'Exploration")
     
     st.markdown("""
     <div style='text-align: center; padding: 2rem; background: linear-gradient(135deg, #8B0000, #5D4037); color: white; border-radius: 15px;'>
@@ -233,18 +211,15 @@ if page == "🏠 Accueil":
     </div>
     """, unsafe_allow_html=True)
     
-    # Navigation rapide
-    st.info("💡 **Utilisez la sidebar pour naviguer entre les différentes sections de l'application**")
-
 #--------------------------------------------------------
 #----------------- Jeu de données -----------------------
 #--------------------------------------------------------
 
 elif page == "📊 Jeu de données":
-    st.title("📊 Aperçu du Dataset des Vins")
+    st.title("Aperçu du Dataset des Vins")
     
     # Vérification des colonnes disponibles
-    st.header("🔍 Structure du Dataset")
+    st.header("Structure du Dataset")
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -257,7 +232,7 @@ elif page == "📊 Jeu de données":
         st.metric("Mémoire", f"{df.memory_usage(deep=True).sum() / 1024**2:.2f} MB")
     
     # Afficher les premières lignes
-    st.header("📋 Aperçu des données")
+    st.header("Aperçu des données")
     
     tab1, tab2, tab3 = st.tabs(["Données brutes", "Types de données", "Statistiques"])
     

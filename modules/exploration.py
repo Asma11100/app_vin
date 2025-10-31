@@ -6,7 +6,7 @@ import plotly.express as px
 import altair as alt
 
 def run_exploration(df):
-    st.title("🔍 Exploration des Données")
+    st.title("Exploration des données")
     
     if df.empty:
         st.warning("Aucune donnée à explorer")
@@ -16,13 +16,13 @@ def run_exploration(df):
     # --- Sélection des colonnes (inclut target) ---
     all_cols = df.columns.tolist()
     selected_cols = st.multiselect(
-        "🎯 Choisissez les colonnes à afficher",
+        "Choisissez les colonnes à afficher",
         options=all_cols,
         default=all_cols
     )
 
     if not selected_cols:
-        st.warning("⚠️ Merci de sélectionner au moins une colonne.")
+        st.warning("Merci de sélectionner au moins une colonne.")
         return
 
     # --- DataFrame filtré ---
@@ -36,8 +36,8 @@ def run_exploration(df):
 
     # --- Choix des visuels ---
     visual_choice = st.selectbox(
-        "📊 Choisissez le type de visualisation",
-        ["Histogramme par variable", "Histogrammes", "Pairplot", "Matrice de corrélation"]
+        "Choisissez le type de visualisation",
+        ["Histogrammes", "Histogrammes segmentés par catégorie", "Pairplot", "Matrice de corrélation"]
     )
 
     st.markdown("<br><br>", unsafe_allow_html=True)
@@ -50,7 +50,7 @@ def run_exploration(df):
     # ===========================
     # Histogramme par variable (Target)
     # ===========================
-    if visual_choice == "Histogramme par variable":
+    if visual_choice == "Histogrammes segmentés par catégorie":
 
         # ---- Cas 1 : target non sélectionné ----
         # Vérifier que target est sélectionné
@@ -64,7 +64,7 @@ def run_exploration(df):
             return
 
         # ---- Cas 3 : uniquement target sélectionné ➜ afficher ----
-        st.subheader("Histogramme par variable")
+        st.subheader("Histogrammes segmentés par catégorie")
 
         # Compter les classes
         counts = df["target"].value_counts().reset_index()
