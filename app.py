@@ -108,7 +108,7 @@ if page == "🏠 Accueil":
     """, unsafe_allow_html=True)
     
     # Section Pipeline
-    st.markdown("## Notre Approche Scientifique")
+    st.markdown("## Notre approche scientifique")
     
     st.markdown("###    Pipeline IA Haute Performance")
     st.markdown("Notre pipeline complet de Machine Learning transforme les données chimiques brutes en insights actionnables :")
@@ -202,7 +202,7 @@ if page == "🏠 Accueil":
     
     # Call to Action
     st.markdown("---")
-    st.markdown("##  Commencer l'Exploration")
+    st.markdown("##  Commencer l'exploration")
     
     st.markdown("""
     <div style='text-align: center; padding: 2rem; background: linear-gradient(135deg, #8B0000, #5D4037); color: white; border-radius: 15px;'>
@@ -216,10 +216,10 @@ if page == "🏠 Accueil":
 #--------------------------------------------------------
 
 elif page == "📊 Jeu de données":
-    st.title("Aperçu du Dataset des Vins")
+    st.title("Aperçu du dataset des vins")
     
     # Vérification des colonnes disponibles
-    st.header("Structure du Dataset")
+    st.header("Structure du dataset")
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:

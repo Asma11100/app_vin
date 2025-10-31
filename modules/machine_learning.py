@@ -136,15 +136,7 @@ def run_machine_learning(df):
         ax.set_title(f"Importance des variables - {model_choice}")
         st.pyplot(fig)
 
-        # ✅ Tree example for RF
-        if model_choice == "Random Forest":
-            from sklearn import tree
-            estimator = model.estimators_[0]
-            fig, ax = plt.subplots(figsize=(25, 12))
-            tree.plot_tree(estimator, feature_names=feature_cols, filled=True, rounded=True, fontsize=7)
-            st.subheader("Présentation du Random Forest")
-            st.pyplot(fig)
-
+    
         # Stocker résultats pour l'évaluation
         results = {
             "X_test": X_test,
