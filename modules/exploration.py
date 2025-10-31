@@ -3,75 +3,155 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
+import altair as alt
 
 def run_exploration(df):
-    st.title("🔍 Exploration des Données")
+    st.title("Exploration des données")
     
     if df.empty:
         st.warning("Aucune donnée à explorer")
         return
     
-    # A. Histogramme avec sélection de colonnes
-    st.header("📊 Histogrammes")
-    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+    # --- Sélection des colonnes  ---
+    # --- Sélection des colonnes (inclut target) ---
+    all_cols = df.columns.tolist()
+    selected_cols = st.multiselect(
+        "Choisissez les colonnes à afficher",
+        options=all_cols,
+        default=all_cols
+    )
+
+    if not selected_cols:
+        st.warning("Merci de sélectionner au moins une colonne.")
+        return
+
+    # --- DataFrame filtré ---
+    df_selected = df[selected_cols]
+
+    # Séparer target des features
+    if "target" in selected_cols:
+        feature_cols = [c for c in selected_cols if c != "target"]
+    else:
+        feature_cols = selected_cols
+
+    # --- Choix des visuels ---
+    visual_choice = st.selectbox(
+        "Choisissez le type de visualisation",
+        ["Histogrammes", "Histogrammes segmentés par catégorie", "Pairplot", "Matrice de corrélation"]
+    )
+
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+    # if visuel_choice == "Histogramme par variable":
+    #     st.subheader("Histogramme par variable")
+    #     st.bar_chart(df["target"].value_counts(), color="#E3A587")
+
     
-    if numeric_cols:
-        selected_hist_cols = st.multiselect(
-            "Choisir les colonnes pour l'histogramme :",
-            options=numeric_cols,
-            default=numeric_cols[:3] if len(numeric_cols) >= 3 else numeric_cols
+    # ===========================
+    # Histogramme par variable (Target)
+    # ===========================
+    if visual_choice == "Histogrammes segmentés par catégorie":
+
+        # ---- Cas 1 : target non sélectionné ----
+        # Vérifier que target est sélectionné
+        if "target" not in selected_cols:
+            st.warning("⚠️ Veuillez sélectionner la colonne 'target' pour afficher cet histogramme.")
+            return
+
+        # ---- Cas 2 : target + autres colonnes = non ----
+        if len(selected_cols) > 1:
+            st.warning("⚠️ Cet histogramme n'est affiché que lorsque seule la colonne 'target' est sélectionnée.")
+            return
+
+        # ---- Cas 3 : uniquement target sélectionné ➜ afficher ----
+        st.subheader("Histogrammes segmentés par catégorie")
+
+        # Compter les classes
+        counts = df["target"].value_counts().reset_index()
+        counts.columns = ["target", "count"]
+
+        # Identifier la classe la plus fréquente
+        max_class = counts.loc[counts["count"].idxmax(), "target"]
+
+        # Palette
+        colors = alt.Scale(
+            domain=counts["target"].tolist(),  # Classes dans l'ordre
+            range=[
+                "#E3A587" if cls != max_class else "#722E1E"  # 👈 foncé si classe max
+                for cls in counts["target"]
+            ]
         )
+
+        chart = (
+            alt.Chart(counts)
+            .mark_bar()
+            .encode(
+                x=alt.X("target:N", title="Classe"),
+                y=alt.Y("count:Q", title="Nombre d'observations"),
+                color=alt.Color("target:N", scale=colors, title="target"),
+                tooltip=["target", "count"]
+            )
+            .properties(width=400, height=300)
+        )
+        st.altair_chart(chart, use_container_width=True)
+        st.success(f"Classe la plus représentée : **{max_class}**")
+
+    # ===========================
+    # Histogrammes par feature
+    # ===========================   
+
+    elif visual_choice == "Histogrammes":
+        st.subheader("Histogrammes")
+
+        if "target" not in selected_cols:
+            st.warning("⚠️ Sélectionnez la colonne 'target' pour afficher les histogrammes.")
+            return
         
-        if selected_hist_cols:
-            n_cols = min(2, len(selected_hist_cols))
-            n_rows = (len(selected_hist_cols) + n_cols - 1) // n_cols
-            
-            fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 5*n_rows))
-            axes = axes.flatten() if n_rows > 1 else [axes]
-            
-            for i, col in enumerate(selected_hist_cols):
-                if i < len(axes):
-                    axes[i].hist(df[col].dropna(), bins=20, alpha=0.7, color='skyblue', edgecolor='black')
-                    axes[i].set_title(f'Histogramme de {col}')
-                    axes[i].set_xlabel(col)
-                    axes[i].set_ylabel('Fréquence')
-            
-            # Masquer les axes vides
-            for j in range(len(selected_hist_cols), len(axes)):
-                axes[j].set_visible(False)
-            
-            plt.tight_layout()
+        for col in feature_cols:
+            fig, ax = plt.subplots(figsize=(5, 3))
+            sns.histplot(df, x=col, hue="target", kde=True, ax=ax)
             st.pyplot(fig)
-    
-    # B. Pairplot avec interactions
-    st.header("📈 Pairplot avec Interactions")
-    
-    if len(numeric_cols) >= 2:
-        selected_pair_cols = st.multiselect(
-            "Choisir les colonnes pour le pairplot :",
-            options=numeric_cols,
-            default=numeric_cols[:4] if len(numeric_cols) >= 4 else numeric_cols
-        )
+
+    # ===========================
+    # Pairplot
+    # ===========================
+
+    elif visual_choice == "Pairplot":
+        st.subheader("Pairplot")
+
+        if "target" not in selected_cols:
+            st.warning("⚠️ Sélectionnez 'target' pour afficher le pairplot.")
+            return   
         
-        # Sélection de la colonne pour la couleur (catégorielle)
-        color_col = st.selectbox(
-            "Colonne pour la couleur (optionnel) :",
-            options=['Aucune'] + df.columns.tolist()
-        )
+        # Vérifier qu'il y a au moins 1 feature en plus de target
+        if len(selected_cols) == 1:  # only target selected
+            st.warning("⚠️ Le pairplot nécessite au moins une autre variable numérique en plus de 'target'.")
+            return
+
+        if st.button("Générez Pairplot"):
+            pairplot_cols = feature_cols[:10] + ["target"]
+            fig = sns.pairplot(df[pairplot_cols], hue="target")
+            st.pyplot(fig)
         
-        if len(selected_pair_cols) >= 2:
-            if st.button("Générer Pairplot"):
-                try:
-                    if color_col != 'Aucune':
-                        fig = px.scatter_matrix(df[selected_pair_cols + [color_col]], 
-                                              dimensions=selected_pair_cols,
-                                              color=color_col,
-                                              title="Pairplot avec Interactions")
-                    else:
-                        fig = px.scatter_matrix(df[selected_pair_cols], 
-                                              dimensions=selected_pair_cols,
-                                              title="Pairplot")
-                    
-                    st.plotly_chart(fig)
-                except Exception as e:
-                    st.error(f"Erreur lors de la génération du pairplot : {e}")
+        else:
+            st.info("Cliquez pour afficher le pairplot, peut être lent ⏳")
+  
+    # ===========================
+    # Matrice de corrélation
+    # ===========================
+    elif visual_choice == "Matrice de corrélation":
+        st.subheader("Matrice de corrélation")
+        
+        num_df = df_selected.drop(columns=["target"], axis=1) #, errors="ignore"
+        
+        # Vérifier qu'il y a au moins 2 variables numériques
+        numeric_cols = num_df.select_dtypes(include="number")
+
+        if numeric_cols.shape[1] < 2:
+            st.warning("⚠️ La matrice de corrélation nécessite au moins deux variables numériques.")
+            return
+        
+        fig, ax = plt.subplots(figsize=(10,5))
+        sns.heatmap(numeric_cols.corr(), annot=True, fmt=".2f", cmap="coolwarm", linewidths=0.5, cbar_kws={"shrink": .8}, annot_kws={"size": 6}, ax=ax)
+        st.pyplot(fig)
+

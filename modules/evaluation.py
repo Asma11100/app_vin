@@ -1,56 +1,103 @@
-# modules/evaluation.py
 import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-
+import numpy as np
+from sklearn.metrics import ConfusionMatrixDisplay
+ 
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    confusion_matrix, roc_curve, auc, classification_report
+)
+ 
 def run_evaluation(model, results):
-    """
-    Fonction pour exécuter l'évaluation du modèle
-    """
-    try:
-        st.header("📊 Évaluation du Modèle")
-        
-        if model is None:
-            st.warning("Aucun modèle n'a été entraîné.")
-            return
-        
-        if results is None:
-            st.warning("Aucun résultat d'évaluation disponible.")
-            return
-        
-        # Métriques principales
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.metric("Accuracy", f"{results.get('accuracy', 0):.3f}")
-        
-        with col2:
-            precision = results.get('classification_report', {}).get('weighted avg', {}).get('precision', 0)
-            st.metric("Precision", f"{precision:.3f}")
-        
-        with col3:
-            recall = results.get('classification_report', {}).get('weighted avg', {}).get('recall', 0)
-            st.metric("Recall", f"{recall:.3f}")
-        
-        with col4:
-            f1 = results.get('classification_report', {}).get('weighted avg', {}).get('f1-score', 0)
-            st.metric("F1-Score", f"{f1:.3f}")
-        
-        # Matrice de confusion
-        if 'confusion_matrix' in results:
-            st.subheader("📈 Matrice de Confusion")
-            fig, ax = plt.subplots()
-            sns.heatmap(results['confusion_matrix'], annot=True, fmt='d', ax=ax, cmap='Blues')
-            ax.set_xlabel('Prédiction')
-            ax.set_ylabel('Vérité terrain')
-            st.pyplot(fig)
-        
-        # Rapport de classification détaillé
-        if 'classification_report' in results:
-            st.subheader("📋 Rapport de Classification Détaillé")
-            report_df = pd.DataFrame(results['classification_report']).transpose()
-            st.dataframe(report_df.style.format("{:.3f}"))
-            
-    except Exception as e:
-        st.error(f"Erreur lors de l'évaluation : {str(e)}")
+    st.header("Évaluation du modèle")
+ 
+    if model is None or results is None:
+        st.warning("⚠️ Aucun modèle trouvé. Veuillez entraîner un modèle d'abord.")
+        return
+ 
+    # --- Récupération des données ---
+    X_test = results.get("X_test")
+    y_test = results.get("y_test")
+    feature_cols = results.get("feature_cols", [])
+    model_type = results.get("model_type", "Model")
+ 
+    # --- Prédictions Test & Train ---
+    y_pred_test = model.predict(X_test)
+    X_train = st.session_state.X_train[feature_cols]
+    y_train = st.session_state.y_train
+    y_pred_train = model.predict(X_train)
+ 
+    # --- Calcul des métriques ---
+    metrics = {
+        "Accuracy": (
+            accuracy_score(y_train, y_pred_train),
+            accuracy_score(y_test, y_pred_test)
+        ),
+        "Precision": (
+            precision_score(y_train, y_pred_train, average="weighted", zero_division=0),
+            precision_score(y_test, y_pred_test, average="weighted", zero_division=0)
+        ),
+        "Recall": (
+            recall_score(y_train, y_pred_train, average="weighted", zero_division=0),
+            recall_score(y_test, y_pred_test, average="weighted", zero_division=0)
+        ),
+        "F1-score": (
+            f1_score(y_train, y_pred_train, average="weighted", zero_division=0),
+            f1_score(y_test, y_pred_test, average="weighted", zero_division=0)
+        )
+    }
+ 
+    # --- Display metrics cleanly ---
+    st.subheader("Performance du modèle (Train vs Test)")
+ 
+ # Réduire la taille du texte des metrics
+    st.markdown("""
+    <style>
+    [data-testid="stMetricValue"] {
+        font-size: 16px !important;     /* valeur par défaut ~28px */
+    }
+    [data-testid="stMetricLabel"] {
+        font-size: 12px !important;     /* label plus petit */
+    }
+    </style>
+    """, unsafe_allow_html=True)
+ 
+ 
+    cols = st.columns(4)
+    for idx, (metric, (train_val, test_val)) in enumerate(metrics.items()):
+        cols[idx].metric(
+            metric,
+            f"Train: {train_val:.3f} | Test: {test_val:.3f}"
+        )
+ 
+    st.write("---")
+ 
+    # --- Matrices de confusion ---
+    st.subheader("Matrices de confusion")
+ 
+    # Test
+    col1, col2 = st.columns(2)
+ 
+    with col1:
+        st.write("### Jeu de Test")
+        fig, ax = plt.subplots(figsize=(4, 3))
+        ConfusionMatrixDisplay.from_predictions(y_test, y_pred_test, cmap="Blues", ax=ax)
+        st.pyplot(fig)
+ 
+    # Train
+    with col2:
+        st.write("### Jeu d'entrainement")
+        fig, ax = plt.subplots(figsize=(4, 3))
+        ConfusionMatrixDisplay.from_predictions(y_train, y_pred_train, cmap="Greens", ax=ax)
+        st.pyplot(fig)
+ 
+    st.write("---")
+ 
+    # --- Rapport classification ---
+    st.subheader("Rapport de classification (Test)")
+    report_df = pd.DataFrame(classification_report(y_test, y_pred_test, output_dict=True)).transpose()
+    st.dataframe(report_df.style.format("{:.3f}"), width="stretch")
+ 
+    st.success("✅ Évaluation terminée")
