@@ -39,7 +39,7 @@ st.sidebar.markdown("---")
 
 page = st.sidebar.radio(
     "Choisissez une section :",
-    ["🏠 Accueil",  "📊 Jeu de données", "🔍 Exploration", "⚙️ Nettoyage", "🤖 Entraînement", "📈 Évaluation"]
+    ["🏠 Accueil",  "📊 Jeu de données", "🔍 Exploration", "⚙️ Préparation", "🤖 Entraînement", "📈 Évaluation"]
 )
   
 # Chargement des données
@@ -47,6 +47,10 @@ df = load_data()
 
 
 # --- CONTENU PRINCIPAL ---
+
+#--------------------------------------------------------
+#----------------- Accueil --------------------------
+#--------------------------------------------------------
 
 if page == "🏠 Accueil":
     # Header principal avec style
@@ -232,6 +236,10 @@ if page == "🏠 Accueil":
     # Navigation rapide
     st.info("💡 **Utilisez la sidebar pour naviguer entre les différentes sections de l'application**")
 
+#--------------------------------------------------------
+#----------------- Jeu de données -----------------------
+#--------------------------------------------------------
+
 elif page == "📊 Jeu de données":
     st.title("📊 Aperçu du Dataset des Vins")
     
@@ -255,10 +263,10 @@ elif page == "📊 Jeu de données":
     
     with tab1:
         st.subheader("Premières lignes")
-        st.dataframe(df.head(10), use_container_width=True)
+        st.dataframe(df.head(10), width="stretch")
         
         st.subheader("Dernières lignes")
-        st.dataframe(df.tail(10), use_container_width=True)
+        st.dataframe(df.tail(10), width="stretch")
     
     with tab2:
         st.subheader("Types de données")
@@ -268,114 +276,47 @@ elif page == "📊 Jeu de données":
             'Valeurs uniques': [df[col].nunique() for col in df.columns],
             'Valeurs manquantes': df.isnull().sum().values
         })
-        st.dataframe(info_df, use_container_width=True)
+        st.dataframe(info_df, width="stretch")
     
     with tab3:
         st.subheader("Statistiques descriptives")
-        st.dataframe(df.describe(), use_container_width=True)
-    
-    # Distribution des variables
-    st.header("📈 Distribution des variables")
-    
-    selected_col = st.selectbox("Choisir une variable à analyser:", df.columns)
-    
-    if selected_col in df.columns:
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader(f"Statistiques - {selected_col}")
-            if df[selected_col].dtype in ['int64', 'float64']:
-                stats = df[selected_col].describe()
-                st.dataframe(pd.DataFrame(stats).T, use_container_width=True)
-            else:
-                value_counts = df[selected_col].value_counts()
-                st.dataframe(pd.DataFrame({
-                    'Valeur': value_counts.index,
-                    'Count': value_counts.values,
-                    'Pourcentage': (value_counts.values / len(df) * 100).round(2)
-                }), use_container_width=True)
-        
-        with col2:
-            st.subheader(f"Visualisation - {selected_col}")
-            fig, ax = plt.subplots(figsize=(10, 6))
-            
-            if df[selected_col].dtype in ['int64', 'float64']:
-                # Histogramme pour les variables numériques
-                df[selected_col].hist(bins=30, ax=ax, alpha=0.7, color='skyblue', edgecolor='black')
-                ax.set_title(f'Distribution de {selected_col}')
-                ax.set_xlabel(selected_col)
-                ax.set_ylabel('Fréquence')
-            else:
-                # Bar plot pour les variables catégorielles
-                value_counts = df[selected_col].value_counts().head(10)
-                value_counts.plot(kind='bar', ax=ax, color='lightcoral')
-                ax.set_title(f'Distribution de {selected_col}')
-                ax.set_xlabel(selected_col)
-                ax.set_ylabel('Count')
-                ax.tick_params(axis='x', rotation=45)
-            
-            st.pyplot(fig)
-    
-    # Matrice de corrélation
-    st.header("🔗 Matrice de corrélation")
-    
-    numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
-    
-    if len(numeric_cols) > 1:
-        # Option pour filtrer les colonnes
-        selected_corr_cols = st.multiselect(
-            "Choisir les colonnes pour la corrélation:",
-            options=numeric_cols.tolist(),
-            default=numeric_cols.tolist()[:min(8, len(numeric_cols))]
-        )
-        
-        if len(selected_corr_cols) > 1:
-            corr_matrix = df[selected_corr_cols].corr()
-            
-            fig, ax = plt.subplots(figsize=(12, 8))
-            sns.heatmap(corr_matrix, 
-                       annot=True, 
-                       cmap='coolwarm', 
-                       center=0,
-                       fmt='.2f',
-                       ax=ax,
-                       square=True)
-            ax.set_title('Matrice de Corrélation')
-            st.pyplot(fig)
-            
-            # Top des corrélations
-            st.subheader("Corrélations les plus fortes")
-            corr_pairs = corr_matrix.unstack().sort_values(ascending=False)
-            corr_pairs = corr_pairs[corr_pairs < 0.999]  # Exclure l'auto-corrélation
-            
-            top_corr_df = pd.DataFrame({
-                'Variable 1': [pair[0] for pair in corr_pairs.head(10).index],
-                'Variable 2': [pair[1] for pair in corr_pairs.head(10).index],
-                'Corrélation': corr_pairs.head(10).values
-            })
-            st.dataframe(top_corr_df, use_container_width=True)
-        else:
-            st.warning("Sélectionnez au moins 2 colonnes numériques")
-    else:
-        st.warning("Pas assez de colonnes numériques pour la corrélation")    
+        st.dataframe(df.describe(), width="stretch")
 
+#--------------------------------------------------------
+#----------------- Exploration -----------------------
+#--------------------------------------------------------
 
 elif page == "🔍 Exploration":
     run_exploration(df)
 
-elif page == "⚙️ Nettoyage":
+#--------------------------------------------------------
+#----------------- Préparation -----------------------
+#--------------------------------------------------------
+
+elif page == "⚙️ Préparation":
     data_processed = run_preprocessing(df)
     if data_processed is not None:
         st.session_state.data_processed = data_processed
 
+#--------------------------------------------------------
+#----------------- Entraînement -----------------------
+#--------------------------------------------------------
+
 elif page == "🤖 Entraînement":
     if 'data_processed' in st.session_state:
-        model, results = run_machine_learning(st.session_state.data_processed)
-        if model is not None:
+        output = run_machine_learning(st.session_state.data_processed)
+
+        if output is not None:
+            model, results = output
             st.session_state.model = model
             st.session_state.results = results
+
     else:
-        st.warning("⚠️ Veuillez d'abord prétraiter les données")
+        st.warning("⚠️ Veuillez d'abord préparer les données")
+
+#--------------------------------------------------------
+#----------------- Évaluation -----------------------
+#--------------------------------------------------------
 
 elif page == "📈 Évaluation":
     if 'model' in st.session_state:
@@ -383,25 +324,4 @@ elif page == "📈 Évaluation":
     else:
         st.warning("⚠️ Veuillez d'abord entraîner un modèle")
     
-elif page == "🔍 Exploration":
-    run_exploration(df)
 
-elif page == "⚙️ Nettoyage":
-    data_processed = run_preprocessing(df)
-    if data_processed is not None:
-        st.session_state.data_processed = data_processed
-
-elif page == "🤖 Entraînement":
-    if 'data_processed' in st.session_state:
-        model, results = run_machine_learning(st.session_state.data_processed)
-        if model is not None:
-            st.session_state.model = model
-            st.session_state.results = results
-    else:
-        st.warning("⚠️ Veuillez d'abord prétraiter les données")
-
-elif page == "📈 Évaluation":
-    if 'model' in st.session_state:
-        run_evaluation(st.session_state.model, st.session_state.results)
-    else:
-        st.warning("⚠️ Veuillez d'abord entraîner un modèle")
